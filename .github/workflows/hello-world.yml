@@ -43,6 +43,8 @@ jobs:
           username: ${{ secrets.GCP_VM_USER }}
           key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
           script: |
+            sudo usermod -aG docker $USER
+            sudo systemctl start docker
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-app:latest
             docker stop my-app || true  # Stop any running container
             docker rm my-app || true    # Remove stopped container
