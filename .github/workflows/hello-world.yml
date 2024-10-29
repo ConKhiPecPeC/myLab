@@ -45,6 +45,10 @@ jobs:
           script: |
             sudo chmod 777 /var/run/docker.sock
             sudo systemctl start docker
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-node-app:latest
-            docker run -d --name my-node-app -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/my-node-app:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/my-node-app:latest
+            
+            docker stop my-node-app || true
+            docker rm my-node-app || true
+            
+            docker run -d --name my-node-app -p 80:80 ${{ secrets.DOCKER_USERNAME }}/my-node-app:latest
 
