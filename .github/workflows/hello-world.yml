@@ -8,6 +8,7 @@ jobs:
     steps:
       - run: echo "TODAY=$(date +%y-%m-%d)" >> $GITHUB_ENV  
       - run: echo Hello World, today is $TODAY
+  #Job 1: Build and Push container
   build:
     runs-on: ubuntu-latest
     steps:
@@ -29,3 +30,20 @@ jobs:
       # Bước 4: Push Docker image lên Docker Hub
       - name: Push Docker image to Docker Hub
         run: docker push ${{ secrets.DOCKER_USERNAME }}/my-node-app:latest
+# Job 2: Deploy
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.GCP_VM_IP }}
+          username: ${{ secrets.GCP_VM_USER }}
+          key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-app:latest
+            docker stop my-app || true  # Stop any running container
+            docker rm my-app || true    # Remove stopped container
+            docker run -d --name my-app -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/my-app:latest
+
