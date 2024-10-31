@@ -1,29 +1,31 @@
-# Stage 1: Build the React app
+# Stage 1: Build the Node.js application
 FROM node:18 AS build
 
-# Set working directory in the container
+# Set working directory
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json (if available)
+# Copy package.json and package-lock.json to install dependencies
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy all source code to the container
+# Copy all source files into the container
 COPY . .
 
-# Build the app (output will go to /usr/src/app/build)
+# Build the application (adjust this command if necessary)
 RUN npm run build
 
-# Stage 2: Serve the app with an Nginx server
+# Stage 2: Serve the app with Nginx
 FROM nginx:alpine
 
-# Copy built files from the previous stage to Nginx's default directory
-COPY --from=build /usr/src/app/build /usr/share/nginx/html
+# Copy the build output from the previous stage to Nginx's html directory
+COPY --from=build /usr/src/app/public /usr/share/nginx/html
 
-# Expose port 80
+# Expose port 80 for web traffic
 EXPOSE 80
 
 # Start Nginx server
 CMD ["nginx", "-g", "daemon off;"]
+
+
