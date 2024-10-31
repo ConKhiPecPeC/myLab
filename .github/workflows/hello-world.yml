@@ -8,9 +8,22 @@ jobs:
     steps:
       - run: echo "TODAY=$(date +%y-%m-%d)" >> $GITHUB_ENV  
       - run: echo Hello World, today is $TODAY
+  sonarqube:
+    needs: say-hello
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        # Disabling shallow clones is recommended for improving the relevancy of reporting
+        fetch-depth: 0
+    - name: SonarQube Scan
+      uses: sonarsource/sonarqube-scan-action@v3.0.0 # Ex: v2.1.0, See the latest version at https://github.com/marketplace/actions/official-sonarqube-scan
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
   #Job 1: Build and Push container
   build:
-    needs: say-hello
+    needs: sonarqube
     runs-on: ubuntu-latest
     steps:
       # Bước 1: Checkout mã nguồn từ repo
