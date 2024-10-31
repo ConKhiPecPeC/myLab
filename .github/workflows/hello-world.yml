@@ -8,20 +8,21 @@ jobs:
     steps:
       - run: echo "TODAY=$(date +%y-%m-%d)" >> $GITHUB_ENV  
       - run: echo Hello World, today is $TODAY
+  #Job 1: SonarQube Scan
   sonarqube:
     needs: say-hello
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
       with:
         # Disabling shallow clones is recommended for improving the relevancy of reporting
         fetch-depth: 0
     - name: SonarQube Scan
-      uses: sonarsource/sonarqube-scan-action@v3.0.0 # Ex: v2.1.0, See the latest version at https://github.com/marketplace/actions/official-sonarqube-scan
+      uses: sonarsource/sonarqube-scan-action@v2.1.0 # Ex: v2.1.0, See the latest version at https://github.com/marketplace/actions/official-sonarqube-scan
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-  #Job 1: Build and Push container
+  #Job 2: Build and Push container
   build:
     needs: sonarqube
     runs-on: ubuntu-latest
@@ -44,7 +45,7 @@ jobs:
       # Bước 4: Push Docker image lên Docker Hub
       - name: Push Docker image to Docker Hub
         run: docker push ${{ secrets.DOCKER_USERNAME }}/my-node-app:latest
-# Job 2: Deploy
+# Job 3: Deploy
   deploy:
     needs: build
     runs-on: ubuntu-latest
