@@ -2,7 +2,7 @@
 FROM node:18 AS build
 
 # Set working directory
-WORKDIR /usr/src
+WORKDIR /src
 
 # Copy package.json and package-lock.json to install dependencies
 COPY package*.json ./
@@ -20,7 +20,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # Copy the build output from the previous stage to Nginx's html directory
-COPY --from=build /usr/public /usr/share/nginx/html
+COPY --from=build /public /usr/share/nginx/html
 
 # Expose port 80 for web traffic
 EXPOSE 80
