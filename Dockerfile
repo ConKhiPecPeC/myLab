@@ -14,9 +14,6 @@ RUN npm run build
 # Bước 2: Cấu hình Nginx để deploy
 FROM nginx:alpine
 
-# Copy file cấu hình Nginx tùy chỉnh
-COPY nginx.conf /etc/nginx/nginx.conf
-
 # Copy thư mục public (chứa index.html và CSS) từ bước build vào thư mục của Nginx
 COPY --from=builder /app/public /usr/share/nginx/html
 
