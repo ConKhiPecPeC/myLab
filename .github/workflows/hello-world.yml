@@ -29,7 +29,7 @@ jobs:
         run: |
           sonar-scanner \
           -Dsonar.projectKey=ConKhiPecPeC_myLab \
-          -Dsonar.organization=ConKhiPecPeC \
+          -Dsonar.organization=conkhipecpec \
           -Dsonar.sources=. \
           -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
