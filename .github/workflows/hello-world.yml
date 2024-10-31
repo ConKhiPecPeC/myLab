@@ -9,33 +9,34 @@ jobs:
       - run: echo "TODAY=$(date +%y-%m-%d)" >> $GITHUB_ENV  
       - run: echo Hello World, today is $TODAY
   #Job 1: SonarQube Scan
-  sonar-scan:
-    name: SonarQube Scan
+  sonarqube:
+    name: SonarQube Code Analysis
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      - name: Set up SonarQube Scanner
-        run: |
-          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
-          unzip sonar-scanner-cli-4.8.0.2856-linux.zip
-          mv sonar-scanner-4.8.0.2856-linux sonar-scanner
-          export PATH="$PATH:${{ github.workspace }}/sonar-scanner/bin"
+      - name: Set up JDK 17 for SonarQube
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'zulu'
 
-      - name: SonarQube Scan
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Install SonarScanner
+        run: npm install -g sonar-scanner
+
+      - name: Run SonarScanner
         run: |
           sonar-scanner \
-            -Dsonar.projectKey=myLab \
-            -Dsonar.organization=ConKhiPecPeC \
-            -Dsonar.host.url=https://sonarqube.example.com \
-            -Dsonar.login=$SONAR_TOKEN
+          -Dsonar.projectKey=ConKhiPecPeC_myLab \
+          -Dsonar.organization=ConKhiPecPeC \
+          -Dsonar.sources=. \
+          -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
   #Job 2: Build and Push container
   build:
-    needs: sonar-scan
+    needs: sonarqube
     runs-on: ubuntu-latest
     steps:
       # Bước 1: Checkout mã nguồn từ repo
